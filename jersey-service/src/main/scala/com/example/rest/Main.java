@@ -5,7 +5,10 @@ import java.net.URI;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.glassfish.grizzly.http.server.CLStaticHttpHandler;
+import org.glassfish.grizzly.http.server.HttpHandler;
 import org.glassfish.grizzly.http.server.HttpServer;
+import org.glassfish.grizzly.http.server.StaticHttpHandler;
 import org.glassfish.jersey.grizzly2.httpserver.GrizzlyHttpServerFactory;
 import org.glassfish.jersey.server.ResourceConfig;
 
@@ -27,6 +30,7 @@ public class Main {
         final ResourceConfig rc = new MyResourceConfig().packages("com.example.rest");
         
         final Map<String, Object> initParams = new HashMap<String, Object>();
+        
         initParams.put("com.sun.jersey.config.property.packages", "rest");
         initParams.put("com.sun.jersey.api.json.POJOMappingFeature", "true");
 // 
@@ -46,6 +50,16 @@ public class Main {
      */
     public static void main(String[] args) throws IOException {
         final HttpServer server = startServer();
+        /*
+        HttpHandler staticContentHandler = new CLStaticHttpHandler(HttpServer.class.getClassLoader(), "/static/");
+        server.getServerConfiguration().addHttpHandler(staticContentHandler, "/static");
+        */
+
+        StaticHttpHandler staticHandler = new StaticHttpHandler("./static");
+        staticHandler.setFileCacheEnabled(false);
+		server.getServerConfiguration().addHttpHandler(
+                staticHandler, "/static");
+        
         System.out.println(String.format("Jersey app started with WADL available at "
                 + "%sapplication.wadl\nHit enter to stop it...", BASE_URI));
         System.in.read();

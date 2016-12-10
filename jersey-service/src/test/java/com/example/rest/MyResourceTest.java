@@ -1,22 +1,24 @@
 package com.example.rest;
 
+import static org.junit.Assert.assertEquals;
+
+import java.util.List;
+
 import javax.ws.rs.client.Client;
 import javax.ws.rs.client.ClientBuilder;
 import javax.ws.rs.client.WebTarget;
 
 import org.glassfish.grizzly.http.server.HttpServer;
-
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
-import static org.junit.Assert.assertEquals;
 
 public class MyResourceTest {
 
     private HttpServer server;
     private WebTarget target;
 
-    //@Before
+    @Before
     public void setUp() throws Exception {
         // start the server
         server = Main.startServer();
@@ -27,12 +29,12 @@ public class MyResourceTest {
         // support for JSON in the client (you also have to uncomment
         // dependency on jersey-media-json module in pom.xml and Main.startServer())
         // --
-        // c.configuration().enable(new org.glassfish.jersey.media.json.JsonJaxbFeature());
+       //c.getConfiguration().enable(new org.glassfish.jersey.media.json.JsonJaxbFeature());
 
         target = c.target(Main.BASE_URI);
     }
 
-    //@After
+    @After
     public void tearDown() throws Exception {
         server.stop();
     }
@@ -40,9 +42,10 @@ public class MyResourceTest {
     /**
      * Test to see that the message "Got it!" is sent in the response.
      */
-    //@Test
+    @Test
     public void testGetIt() {
-        String responseMsg = target.path("myresource").request().get(String.class);
-        //assertEquals("Got it!", responseMsg);
+    	List<Person> responseMsg = target.path("myresource").request().get(List.class);
+    	assertEquals(2, responseMsg.size());
+    	//assertEquals(1, responseMsg.stream().filter(p -> p.getFirstName().equals("Eddie")).count());
     }
 }
